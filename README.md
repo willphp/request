@@ -4,6 +4,7 @@ request组件用于处理请求参数和对请求方式进行判断
 #开始使用
 
 ####安装组件
+
 使用 composer 命令进行安装或下载源代码使用(依赖willphp/config,willphp/session,willphp/cookie组件)。
 
     composer require willphp/request
@@ -35,12 +36,14 @@ request组件用于处理请求参数和对请求方式进行判断
 
 
 ####请求方式
+
 判断请求方式的类型有:GET,POST,DELETE,PUT,AJAX,WECHAT,MOBILE
 
     $isPost = Request::isMethod('post'); //参数为类型(不区分大小写)
     $isAjax = Request::isAjax(); //格式:is类型(第一个字母大写)
 
 ####获取请求
+
 获取的请求数据的类型有：GET,POST,REQUEST,SERVER,COOKIE,SESSION
 
     $id = Request::getRequest('get.id', 0, 'intval');  //参数:[请求变量名],[默认值],[处理函数]
