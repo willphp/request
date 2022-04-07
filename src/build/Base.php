@@ -124,7 +124,7 @@ class Base {
 			case 'GET':
 				return $_SERVER['REQUEST_METHOD'] == 'GET';
 			case 'POST':
-				return $_SERVER['REQUEST_METHOD'] == 'POST' || !empty(['POST']);
+				return $_SERVER['REQUEST_METHOD'] == 'POST' || !empty($this->items['POST']);
 			case 'DELETE':
 				return $_SERVER['REQUEST_METHOD'] == 'DELETE' || (isset($_POST['_method']) && $_POST['_method'] == 'DELETE');
 			case 'PUT':
