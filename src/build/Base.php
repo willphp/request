@@ -106,12 +106,17 @@ class Base {
 	 * 过滤请求
 	 */
 	public function filter($data) {
-		$data = is_array($data)? $data : [$data];
-		array_walk_recursive($data, function (&$value) {			
-			if ($value === null) $value = '';				
-			if (!get_magic_quotes_gpc()) $value = addslashes($value);
-			$value = htmlspecialchars($value, ENT_QUOTES);
-		});
+		if (!is_array($data)) {
+			if ($data === null) $data = '';
+			if (!get_magic_quotes_gpc()) $data = addslashes($data);
+			$data = htmlspecialchars($data, ENT_QUOTES);
+		} else {
+			array_walk_recursive($data, function (&$value) {
+				if ($value === null) $value = '';
+				if (!get_magic_quotes_gpc()) $value = addslashes($value);
+				$value = htmlspecialchars($value, ENT_QUOTES);
+			});
+		}
 		return $data;
 	}
 	/**
