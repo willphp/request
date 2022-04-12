@@ -103,21 +103,24 @@ class Base {
 		defined('IS_MOBILE') or define('IS_MOBILE', $this->isMobile());	
 	}
 	/**
-	 * 过滤请求
+	 * 数据处理
+	 * @param  string|array $data 数据
+	 * @param  mixed 	$default 默认值
+	 * @return string|array
 	 */
-	public function filter($data) {
-		if (!is_array($data)) {
-			if ($data === null) $data = '';
-			if (!get_magic_quotes_gpc()) $data = addslashes($data);
-			$data = htmlspecialchars($data, ENT_QUOTES);
+	protected function filter($data, $default = '') {
+		if (empty($data)) {
+			return $default;
+		}
+		if (is_array($data)) {
+			array_walk_recursive($data, 'self::filterValue'); //输出前处理
 		} else {
-			array_walk_recursive($data, function (&$value) {
-				if ($value === null) $value = '';
-				if (!get_magic_quotes_gpc()) $value = addslashes($value);
-				$value = htmlspecialchars($value, ENT_QUOTES);
-			});
+			self::filterValue($data, '');
 		}
 		return $data;
+	}
+	protected static function filterValue(&$value, $key) {
+		$value = ($value === null)? '' : htmlspecialchars($value, ENT_QUOTES);
 	}
 	/**
 	 * 判断请求类型
