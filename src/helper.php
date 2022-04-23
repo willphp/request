@@ -40,9 +40,9 @@ if (!function_exists('web_url')) {
 	 */
 	function web_url($domain = false) {
 		if ($domain) {
-			return \willphp\request\Request::web();
+			return \willphp\request\Request::url();
 		}		
-		return \willphp\request\Request::url();
+		return \willphp\request\Request::web();
 	}
 }
 if (!function_exists('root_url')) {
