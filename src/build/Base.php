@@ -46,14 +46,15 @@ class Base {
 	 */
 	public function bootstrap() {
 		return $this;
-	}
+	}	
 	/**
-	 * 当前基础URL
+	 * 当前基础URL(带域名)
 	 * @return string
 	 */
 	public function url() {
 		$rewrite = Config::get('app.url_rewrite', false);
-		return $rewrite? str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']) : $_SERVER['SCRIPT_NAME'];
+		$url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];		
+		return $rewrite? str_replace('/index.php', '', $url) : $url;
 	}
 	/**
 	 * 获取来源页
@@ -70,18 +71,18 @@ class Base {
 		return defined('RUN_MODE') && RUN_MODE != 'http' ? '' : trim('http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']), '/\\');
 	}	
 	/**
-	 * 当前URL(带域名)
+	 * 当前URL(不带域名)
 	 * @return string
 	 */
 	public function web() {
-		$url = $this->url();		
-		return 'http://'.$_SERVER['HTTP_HOST'].$url;
+		$rewrite = Config::get('app.url_rewrite', false);	
+		return $rewrite? str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']) : $_SERVER['SCRIPT_NAME'];
 	}
 	/**
 	 * 定义请求常量
 	 */
 	protected function defineRequestConst() {
-		$this->items['GET'] = $this->filter($_GET);
+		$this->items['GET'] = $this->filter($_GET);		
 		$this->items['POST'] = $this->filter($_POST);
 		$this->items['REQUEST'] = $this->filter($_REQUEST);
 		$this->items['SERVER'] = $this->filter($_SERVER);		
@@ -105,10 +106,11 @@ class Base {
 	/**
 	 * 数据处理
 	 * @param  string|array $data 数据
-	 * @param  mixed 	$default 默认值
+	 * @param  mixed 		$default 默认值
 	 * @return string|array
 	 */
-	protected function filter($data, $default = '') {
+	protected function filter($data) {
+		$default = is_array($data)? [] : '';
 		if (empty($data)) {
 			return $default;
 		}
@@ -217,7 +219,7 @@ class Base {
 		$action = strtoupper($action);
 		if (empty($arguments)) {
 			return $this->items[$action];
-		}
+		}	
 		$data = $this->arrayGet($this->items[$action], $arguments[0]);
 		if (!is_null($data) && !empty($arguments[2])) {
 			return $this->batchFunctions($arguments[2], $data);
@@ -275,10 +277,10 @@ class Base {
 	 */
 	public function set($name, $value) {
 		$info = explode('.', $name);
-		$action = strtoupper(array_shift($info));
+		$action = strtoupper(array_shift($info));		
 		if (isset($this->items[$action])) {
-			$value = $this->filter($value); //设置时过滤请求值
-			$this->items[$action] = $this->arraySet($this->items[$action], implode('.', $info), $value);
+			$value = $this->filter($value); //设置时过滤请求值			
+			$this->items[$action] = $this->arraySet($this->items[$action], implode('.', $info), $value);			
 			return true;
 		}
 		return false;
@@ -292,12 +294,13 @@ class Base {
 	 */
 	public function setParam($name, $value = '') {
 		$action = $this->isMethod('post')? 'POST' : 'GET';		
-		if (is_array($name)) {
+		if (is_array($name)) {			
 			$this->items[$action] = array_merge($this->items[$action], $name);
 		} elseif ($value === null) {
 			if (isset($this->items[$action][$name])) {
 				unset($this->items[$action][$name]);
 			}
+			if (isset($_GET[$name])) unset($_GET[$name]);
 		} else {
 			$this->items[$action][$name] = $value;
 		}
@@ -308,7 +311,7 @@ class Base {
 	 */
 	public function isAjax() {
 		return isset($_SERVER['HTTP_X_REQUESTED_WITH'])	&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-	}
+	}	
 	/**
 	 * 是否微信端
 	 * @return bool
