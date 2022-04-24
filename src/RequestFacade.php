@@ -7,7 +7,7 @@
  | WeChat: www113344
  | Copyright (c) 2020-2022, www.113344.com. All Rights Reserved.
  |-------------------------------------------------------------------------*/
-namespace willphp\cookie;
+namespace willphp\request;
 use willphp\framework\build\Facade;
 class RequestFacade extends Facade {
 	public static function getFacadeAccessor() {		
