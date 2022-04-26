@@ -82,17 +82,17 @@ class Base {
 	 * 定义请求常量
 	 */
 	protected function defineRequestConst() {
-		$this->items['GET'] = $this->filter($_GET);		
-		$this->items['POST'] = $this->filter($_POST);
-		$this->items['REQUEST'] = $this->filter($_REQUEST);
-		$this->items['SERVER'] = $this->filter($_SERVER);		
+		$this->items['GET'] = $_GET;		
+		$this->items['POST'] = $_POST;
+		$this->items['REQUEST'] = $_REQUEST;
+		$this->items['SERVER'] = $_SERVER;		
 		$this->items['COOKIE']  = Cookie::all();	
 		$this->items['SESSION'] = Session::all();
 		if (empty($_POST)) {
 			$input = file_get_contents('php://input');
 			$data = json_decode($input, true);
 			if ($data) {
-				$this->items['POST'] = $this->filter($data);
+				$this->items['POST'] = $data;
 			}
 		}
 		defined('IS_GET') or define('IS_GET', $this->isMethod('get'));
@@ -102,27 +102,6 @@ class Base {
 		defined('IS_AJAX') or define('IS_AJAX', $this->isAjax());
 		defined('IS_WECHAT') or define('IS_WECHAT', $this->isWeChat());
 		defined('IS_MOBILE') or define('IS_MOBILE', $this->isMobile());	
-	}
-	/**
-	 * 数据处理
-	 * @param  string|array $data 数据
-	 * @param  mixed 		$default 默认值
-	 * @return string|array
-	 */
-	protected function filter($data) {
-		$default = is_array($data)? [] : '';
-		if (empty($data)) {
-			return $default;
-		}
-		if (is_array($data)) {
-			array_walk_recursive($data, 'self::filterValue'); //输出前处理
-		} else {
-			self::filterValue($data, '');
-		}
-		return $data;
-	}
-	protected static function filterValue(&$value, $key) {
-		$value = ($value === null)? '' : htmlspecialchars($value, ENT_QUOTES);
 	}
 	/**
 	 * 判断请求类型
@@ -278,8 +257,7 @@ class Base {
 	public function set($name, $value) {
 		$info = explode('.', $name);
 		$action = strtoupper(array_shift($info));		
-		if (isset($this->items[$action])) {
-			$value = $this->filter($value); //设置时过滤请求值			
+		if (isset($this->items[$action])) {				
 			$this->items[$action] = $this->arraySet($this->items[$action], implode('.', $info), $value);			
 			return true;
 		}
