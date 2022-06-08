@@ -7,24 +7,18 @@
     "request"
   ],
   "homepage": "http://www.113344.com/",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "authors": [
     {
-      "name": "no-mind",
+      "name": "无念",
       "email": "24203741@qq.com"
     }
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=5.6.0",
-    "willphp/config": "~1.0",
-    "willphp/cookie": "~1.0",
-    "willphp/session": "~1.0"
+    "php": ">=5.6.0"
   },
   "autoload": {
-    "files": [
-      "src/helper.php"
-    ],
     "psr-4": {
       "willphp\\request\\": "src"
     }
